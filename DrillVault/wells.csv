@@ -1,0 +1,11 @@
+well_id,well_name,field,latitude,longitude,depth,formation,formation_pressure,mud_weight,drilling_days,risk_score,problems
+W001,Alpha-01,Field-A,17.3850,78.4860,2980,F1,0.71,1.19,22,68,Lost Circulation;Stuck Pipe
+W002,Alpha-02,Field-A,17.3910,78.4930,3120,F1,0.73,1.21,24,76,Well Kick;Lost Circulation
+W003,Alpha-03,Field-A,17.3770,78.4780,2860,F2,0.69,1.17,19,42,Stuck Pipe
+W004,Beta-01,Field-B,17.4020,78.5100,3250,F1,0.76,1.23,27,81,Well Kick;Lost Circulation
+W005,Beta-02,Field-B,17.3700,78.5200,3050,F3,0.70,1.18,23,55,Stuck Pipe
+W006,Gamma-01,Field-C,17.4200,78.4700,3600,F4,0.82,1.26,31,88,Well Kick;Lost Circulation;Stuck Pipe
+W007,Gamma-02,Field-C,17.3500,78.4550,2700,F2,0.66,1.14,18,31,None
+W008,Delta-01,Field-D,17.4000,78.4500,3150,F3,0.74,1.20,25,61,Lost Circulation
+W009,Delta-02,Field-D,17.3650,78.5000,2920,F1,0.72,1.19,21,64,Stuck Pipe
+W010,Epsilon-01,Field-E,17.4400,78.5200,3450,F4,0.79,1.25,29,79,Well Kick

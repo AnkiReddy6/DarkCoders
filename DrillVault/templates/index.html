@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>DrillVault | Drilling Intelligence Control Center</title>
+<link rel="preconnect" href="https://unpkg.com"><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{--bg:#100b05;--panel:#191109;--panel2:#24170b;--line:#5a3a16;--text:#fff7e6;--muted:#c9b99d;--cyan:#ffd34d;--blue:#ffb52e;--green:#f6c945;--amber:#ff9d1c;--red:#ff5c4d;--purple:#ffb347;--gold:#ffb52e}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 78% 0%,#4a2608 0,#1f1207 34%,#100b05 76%);font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--text)}
+.app{display:flex;min-height:100vh}.side{width:245px;background:#120c06f2;border-right:1px solid var(--line);padding:22px 15px;position:fixed;inset:0 auto 0 0;z-index:10}.brand{padding:8px 10px 24px}.brand b{font-size:20px}.brand span{display:block;color:#ffbd2e;font-size:11px;margin-top:5px}.nav small{display:block;color:#526b87;padding:18px 13px 7px;text-transform:uppercase;letter-spacing:1.2px}.nav a{display:block;padding:11px 13px;margin:5px 0;border-radius:10px;color:var(--muted);text-decoration:none;font-size:13px}.nav a:hover,.nav a.active{background:linear-gradient(90deg,#5a3209,#8a4d08);color:#fff;border:1px solid #d68b1b}.main{margin-left:245px;width:calc(100% - 245px);padding:22px 28px 50px}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.eyebrow{color:#ffbd2e;font-size:11px;letter-spacing:2px;text-transform:uppercase}.top h1{margin:5px 0 0;font-size:27px}.status{padding:8px 12px;border:1px solid #24506c;background:#241608;border-radius:20px;color:#ffd45a;font-size:12px}.hero{background:linear-gradient(120deg,#211407,#4a2608 58%,#2a1708);border:1px solid #6e4517;border-radius:18px;padding:22px;display:flex;justify-content:space-between;gap:20px;overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:#f2c66d12;right:-100px;top:-145px}.hero h2{margin:0 0 8px;font-size:23px}.hero p{margin:0;color:#d5c3a6;max-width:750px;font-size:13px;line-height:1.6}.hero-tag{align-self:center;border:1px solid #465b4e;background:#1a0f05;padding:13px 15px;border-radius:12px;min-width:220px;z-index:1}.hero-tag b{display:block}.hero-tag span{font-size:11px;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:15px 0}.metric{background:#171006;border:1px solid var(--line);border-radius:14px;padding:14px}.metric .k{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.8px}.metric .v{font-size:23px;font-weight:700;margin-top:8px}.metric .sub{font-size:10px;color:#6f849d;margin-top:4px}.panel{background:#181006;border:1px solid var(--line);border-radius:16px;padding:17px}.panel h3{margin:0 0 14px;font-size:15px}.controls{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.field label{font-size:10px;color:var(--muted);display:block}.field input,.field select{width:100%;margin-top:5px;background:#100b06;color:#fff;border:1px solid #65431b;border-radius:8px;padding:10px}.btn{background:linear-gradient(90deg,#ffd43b,#ff9f1c);border:0;color:white;padding:11px 16px;border-radius:9px;font-weight:700;cursor:pointer;grid-column:span 6;margin-top:2px}.btn:hover{filter:brightness(1.1)}.grid2{display:grid;grid-template-columns:1.45fr .9fr;gap:15px;margin-top:15px}.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-top:15px}.hidden{display:none}#map{height:430px;border-radius:11px;overflow:hidden;border:1px solid #3a4d43}.leaflet-container{background:#0a1523}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#0c1a2a;color:#eaf2ff}.leaflet-popup-content{font-size:12px}.note{font-size:10px;color:#9a8463;margin-top:9px;line-height:1.55}.badge{display:inline-block;padding:7px 10px;border-radius:20px;font-size:11px;font-weight:800}.badge.high{background:#481724;color:#ff91a1}.badge.medium{background:#473516;color:#ffd47b}.badge.low{background:#12382d;color:#7ff0c0}.rec{padding:11px;border-left:3px solid var(--cyan);background:#2a1808;margin:7px 0;border-radius:7px;color:#c9d8e9;font-size:12px;line-height:1.45}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.d{background:#140c05;border:1px solid #304038;padding:10px;border-radius:8px}.d span{display:block;color:var(--muted);font-size:9px;text-transform:uppercase}.d b{font-size:13px;display:block;margin-top:3px}.big{font-size:25px;font-weight:700}.well-list{max-height:360px;overflow:auto}.well{padding:11px;border:1px solid #1c3047;border-radius:10px;margin-bottom:8px;cursor:pointer;background:#170f07}.well:hover,.well.sel{border-color:#5b8c78;background:#2a1808}.well-row{display:flex;justify-content:space-between}.well small{color:var(--muted)}.risk{font-size:10px;font-weight:700;padding:4px 7px;border-radius:12px}.risk.h{background:#4a1824;color:#ff9baa}.risk.m{background:#463617;color:#ffd47e}.risk.l{background:#12382f;color:#80efc2}
+.signature{border:1px solid #704718;background:linear-gradient(135deg,#241506,#130b05);position:relative;overflow:hidden}.signature:before{content:"WHY THIS WELL?";position:absolute;right:14px;top:10px;color:#ffb52e22;font-weight:900;font-size:28px}.best{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}.best-title{font-size:20px;font-weight:800}.score{font-size:29px;color:var(--cyan);font-weight:900}.bars{margin-top:14px}.barrow{display:grid;grid-template-columns:100px 1fr 45px;gap:8px;align-items:center;margin:8px 0;font-size:10px}.track{height:7px;background:#3a2813;border-radius:20px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#ffe45b,#ff8f1f);border-radius:20px}.timeline{position:relative;padding:4px 0 4px 22px}.timeline:before{content:"";position:absolute;left:7px;top:5px;bottom:5px;width:2px;background:#24435e}.event{position:relative;padding:7px 0 9px 12px;font-size:11px}.event:before{content:"";position:absolute;left:-19px;top:11px;width:9px;height:9px;border-radius:50%;background:var(--green);border:2px solid #0b1828}.event.risk:before{background:var(--red)}.event.complete:before{background:var(--cyan)}.event b{display:block;color:#fff}.event span{color:var(--muted)}.compare{display:grid;grid-template-columns:1fr 1fr;gap:10px}.compare-card{background:#140c05;border:1px solid #304038;border-radius:10px;padding:12px}.compare-card h4{margin:0 0 8px}.compare-line{display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid #17283b}.pill{display:inline-block;font-size:9px;padding:4px 7px;border-radius:12px;background:#142d45;color:#8ff0df}.signal{display:grid;grid-template-columns:1fr 1fr;gap:8px}.signal .s{padding:10px;border:1px solid #304038;background:#140c05;border-radius:9px}.s b{display:block;font-size:12px}.s span{font-size:9px;color:var(--muted)}.evidence{padding:11px;border:1px dashed #31506b;border-radius:10px;background:#1a1006;color:#d5c3a6;font-size:10px;line-height:1.55}.footer-note{margin-top:15px;color:#61778e;font-size:10px}
+@media(max-width:1100px){.side{width:70px}.brand span,.brand b,.nav a span,.nav small{display:none}.main{margin-left:70px;width:calc(100% - 70px)}.metrics{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.controls{grid-template-columns:repeat(2,1fr)}.btn{grid-column:span 2}}@media(max-width:650px){.main{padding:14px}.hero{display:block}.hero-tag{margin-top:15px}.metrics{grid-template-columns:1fr}.side{display:none}.main{margin-left:0;width:100%}.controls{grid-template-columns:1fr}.btn{grid-column:span 1}.compare{grid-template-columns:1fr}}
+/* ===== PREMIUM PETROLEUM AMBER UI ===== */
+
+.metric,
+.panel,
+.hero,
+.results {
+    transition: all 0.25s ease;
+}
+
+.metric:hover,
+.panel:hover {
+    transform: translateY(-3px);
+    border-color: #ffb000;
+    box-shadow: 0 10px 30px rgba(255, 176, 0, 0.14);
+}
+
+/* Yellow → Orange buttons */
+.btn {
+    background: linear-gradient(
+        90deg,
+        #ffe23b 0%,
+        #ffb000 50%,
+        #ff8c00 100%
+    );
+    color: #17100a;
+    font-weight: 900;
+    border: none;
+    transition: 0.25s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 160, 0, 0.35);
+}
+
+/* Inputs */
+input:focus {
+    outline: none;
+    border-color: #ffb000 !important;
+    box-shadow: 0 0 0 3px rgba(255, 176, 0, 0.12);
+}
+
+/* Risk badge */
+.badge {
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #ffe23b, #ff9f1c);
+    color: #17100a;
+    box-shadow: 0 0 15px rgba(255, 174, 0, 0.25);
+}
+
+/* Section heading accent */
+.panel h3::after {
+    content: "";
+    display: block;
+    width: 45px;
+    height: 3px;
+    margin-top: 7px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #ffe23b, #ff8c00);
+}
+
+/* Smooth dashboard loading */
+main {
+    animation: dashboardIn 0.5s ease;
+}
+
+@keyframes dashboardIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ===== RISK INTELLIGENCE UI ===== */
+
+.risk-intelligence {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #ffb300;
+    background:
+        radial-gradient(circle at 90% 10%, rgba(255, 179, 0, 0.10), transparent 35%),
+        linear-gradient(145deg, #171008, #241507);
+    box-shadow: 0 0 25px rgba(255, 179, 0, 0.08);
+}
+
+.risk-intelligence::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #ffe23b,
+        #ffb000,
+        #ff7a00
+    );
+}
+
+.risk-intelligence h3 {
+    margin-bottom: 18px;
+    color: #fff7d6;
+}
+
+/* Risk overview */
+
+.risk-overview {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 25px;
+    align-items: center;
+}
+
+/* Circular score */
+
+.risk-score-circle {
+    width: 155px;
+    height: 155px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    background:
+        conic-gradient(
+            #ffe23b 0deg,
+            #ffb000 190deg,
+            #ff7a00 250deg,
+            #302010 250deg
+        );
+
+    box-shadow:
+        0 0 20px rgba(255, 179, 0, 0.25),
+        inset 0 0 20px rgba(0,0,0,0.45);
+
+    animation: riskPulse 3s ease-in-out infinite;
+}
+
+.risk-score-circle::after {
+    content: "";
+    position: absolute;
+    width: 122px;
+    height: 122px;
+    border-radius: 50%;
+    background: #171008;
+}
+
+.risk-score-value {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.risk-score-value strong {
+    display: block;
+    font-size: 36px;
+    color: #ffe23b;
+}
+
+.risk-score-value span {
+    font-size: 11px;
+    color: #c9b99d;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Risk level */
+
+.risk-level {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: rgba(255, 179, 0, 0.12);
+    border: 1px solid rgba(255, 179, 0, 0.35);
+    color: #ffe23b;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.risk-level::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffb000;
+    box-shadow: 0 0 10px #ffb000;
+}
+
+/* Risk tracks */
+
+.risk-track {
+    margin: 15px 0;
+}
+
+.risk-track-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    font-size: 12px;
+    color: #c9b99d;
+}
+
+.risk-track-header b {
+    color: #fff7d6;
+}
+
+.risk-bar {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #302010;
+    border: 1px solid rgba(255, 179, 0, 0.15);
+}
+
+.risk-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(
+        90deg,
+        #ffe23b,
+        #ffb000,
+        #ff7a00
+    );
+
+    box-shadow: 0 0 10px rgba(255, 179, 0, 0.35);
+
+    animation: riskGrow 1.2s ease-out;
+}
+
+/* Warning */
+
+.risk-warning {
+    margin-top: 22px;
+    padding: 15px 18px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255, 179, 0, 0.13),
+            rgba(255, 122, 0, 0.05)
+        );
+
+    border: 1px solid rgba(255, 179, 0, 0.35);
+
+    box-shadow:
+        inset 4px 0 0 #ffb000,
+        0 8px 25px rgba(0,0,0,0.15);
+}
+
+.risk-warning > span {
+    font-size: 23px;
+    color: #ffe23b;
+}
+
+.risk-warning b {
+    color: #ffe23b;
+}
+
+.risk-warning p {
+    margin: 5px 0 0;
+    color: #d5c5a8;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+/* Hover effect */
+
+.risk-track {
+    transition: transform 0.25s ease;
+}
+
+.risk-track:hover {
+    transform: translateX(5px);
+}
+
+/* Animations */
+
+@keyframes riskGrow {
+    from {
+        width: 0;
+    }
+}
+
+@keyframes riskPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 179, 0, 0.20);
+    }
+
+    50% {
+        transform: scale(1.035);
+        box-shadow: 0 0 35px rgba(255, 179, 0, 0.35);
+    }
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .risk-overview {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .risk-overview > div {
+        width: 100%;
+    }
+
+    .risk-score-circle {
+        width: 130px;
+        height: 130px;
+    }
+
+    .risk-score-circle::after {
+        width: 102px;
+        height: 102px;
+    }
+}
+/* ===== SMOOTH WORKSPACE ACTIVE UI ===== */
+
+.nav a {
+  transition:
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.nav a:hover {
+  transform: translateX(3px);
+}
+
+.nav a.active {
+  background: linear-gradient(90deg, #ffb300, #ff8c00);
+  color: #1a0f05;
+  border-color: #ffc34d;
+  box-shadow: 0 0 16px rgba(255, 179, 0, 0.28);
+  transform: translateX(4px);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+/* ===== PREMIUM SCROLL EFFECT ===== */
+
+main section,
+main .panel,
+main .grid2,
+main .grid3 {
+  animation: sectionReveal 0.7s ease both;
+}
+
+@keyframes sectionReveal {
+  from {
+    opacity: 0.88;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main section:hover,
+main .panel:hover {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+</style></head>
+<body><div class="app">
+<aside class="side"><div class="brand"><b>DrillVault</b><span>NWIS • WELL INTELLIGENCE</span></div><nav class="nav"><small>Workspace</small><a href="#dashboard">◈ <span>Command Dashboard</span></a><a href="#analysis">◎ <span>Proposed Well</span></a><a href="#mapPanel" onclick="event.preventDefault(); event.stopPropagation(); document.getElementById('mapPanel').scrollIntoView({behavior:'smooth', block:'start'});">⌖ <span>Offset Well Map</span></a><a href="#signature">✦ <span>Why This Well?</span></a><a href="#timeline" onclick="document.getElementById('timeline').scrollIntoView({behavior:'smooth', block:'start'}); return false;"><span>Drilling Story</span></a><a href="#scenario">◌ <span>Scenario Lab</span></a><small>System</small><a href="#about" onclick="event.preventDefault(); document.getElementById('about').scrollIntoView({behavior:'smooth'}); history.replaceState(null,'',window.location.pathname);">◉ <span>Prototype Notes</span></a></nav></aside>
+<main class="main"><div class="top"><div><div class="eyebrow">Drilling Decision Support • PETROLEUM AMBER</div><h1>Nearby Wells Intelligence System</h1></div></div>
+<section class="hero" id="dashboard"><div><h2>Learn from the wells already drilled — before the next well.</h2><p>DrillVault turns offset-well history into a visual intelligence layer for a proposed well — comparing drilling conditions, surfacing recurring problems, and creating an explainable engineering-review trail.</p></div><div class="hero-tag"><b>FIELD INTELLIGENCE MODE</b><span>Representative demo data • Engineer review required</span></div></section>
+<div class="metrics"><div class="metric"><div class="k">Offset wells</div><div class="v" id="total">—</div><div class="sub">Indexed in prototype</div></div><div class="metric"><div class="k">High-risk wells</div><div class="v" id="high">—</div><div class="sub">Risk score ≥ 70</div></div><div class="metric"><div class="k">Average depth</div><div class="v" id="depth">—</div><div class="sub">Across indexed wells</div></div><div class="metric"><div class="k">Recurring issue</div><div class="v" id="common">—</div><div class="sub">Most observed problem</div></div><div class="metric"><div class="k">Intelligence coverage</div><div class="v" id="coverageTop">—</div><div class="sub">Prototype evidence indicator</div></div></div>
+<section class="panel" id="analysis"><h3>Proposed Well Intelligence</h3><div class="controls"><div class="field"><label>Latitude</label><input id="lat" value="17.385"></div><div class="field"><label>Longitude</label><input id="lon" value="78.486"></div><div class="field"><label>Target depth (m)</label><input id="targetDepth" value="3000"></div><div class="field"><label>Formation pressure</label><input id="pressure" value="0.72"></div><div class="field"><label>Formation</label><select id="formation"><option value="F1">F1</option><option value="F2">F2</option><option value="F3">F3</option><option value="F4">F4</option></select></div><div class="field"><label>Mud weight</label><input id="mud" value="1.20"></div><button class="btn" onclick="analyze()">Run Offset Intelligence Analysis →</button></div></section>
+<div id="results" class="hidden">
+<section class="grid2" style="margin-top:15px"><div class="panel" id="mapPanel"><h3>Spatial Well Intelligence</h3><div id="map"></div><div class="note">Blue = offset well • Red = proposed well • Click a well to inspect its history.</div></div><div><div class="panel" id="detail"><h3>Selected Well</h3><div class="big">Select a well</div><p class="note">Click any marker or well card to view the offset-well profile.</p></div><div class="panel" style="margin-top:15px"><h3>Decision Support</h3><div id="riskBadge"></div><p class="note">Nearby-well average risk: <b id="avgRisk">—</b></p><div id="recommendations"></div></div></div></section>
+<section class="grid2" id="signature"><div class="panel signature"><h3>Explainable Intelligence</h3><div class="note">Weighted similarity engine — transparent prototype logic</div><div class="best"><div><div class="pill">MOST RELEVANT OFFSET</div><div class="best-title" id="bestName">—</div><div class="note" id="bestMeta">—</div></div><div class="score" id="bestScore">—%</div></div><div class="bars" id="bars"></div><div class="rec" id="whyText"></div></div><div class="panel" id="timeline"><h3>What Happened Here?</h3><div class="timeline" id="timelineBody"></div></div></section>
+<section class="grid3"><div class="panel"><h3>Risk Pattern</h3><canvas id="riskChart"></canvas><div class="note">Occurrences across selected nearby wells.</div></div><div class="panel"><h3>Signal Board</h3><div class="signal" id="signals"></div></div><div class="panel"><h3>Evidence Trail</h3><div class="evidence" id="evidence"></div></div></section>
+<div class="panel" style="margin-top:15px; border:1px solid #ffb000;">
+  <h3>Drilling Intelligence Summary</h3>
+
+  <div class="note" style="line-height:1.8;">
+    <b>Best Offset Well:</b> <span id="summaryBestWell">Delta-02</span><br>
+<b>Similarity:</b> <span id="summarySimilarity">91.6%</span><br>
+<b>Historical Risk:</b> <span id="summaryRisk">Stuck Pipe</span><br>
+<b>Risk Level:</b> <span id="summaryRiskLevel">Medium Risk</span><br>
+<b>Review Before Drilling:</b><br>
+<span id="summaryReview">Stuck-pipe intervals, pressure-control history and lost-circulation events.</span>
+  </div>
+</div>
+<section class="panel" id="scenario" style="margin-top:15px"><h3>Scenario Lab — Compare Indexed Wells</h3><div class="compare" id="compare"></div><div class="note">This is a prototype comparison view. It supports review; it does not prescribe real drilling parameters.</div>
+<div class="panel risk-intelligence">
+  <div class="risk-header">
+    <div>
+      <div class="eyebrow">LIVE WELL ASSESSMENT</div>
+      <h3>Risk Intelligence</h3>
+    </div>
+    <span class="risk-status">● ANALYZED</span>
+  </div>
+
+  <div class="risk-score-box">
+    <div class="risk-score-circle">
+      <span id="uiRiskScore">64</span>
+      <small>/ 100</small>
+    </div>
+
+    <div class="risk-summary">
+      <div class="risk-level">MEDIUM RISK</div>
+      <p>Based on nearby well history and drilling similarity.</p>
+    </div>
+  </div>
+
+  <div class="risk-bars">
+
+    <div class="risk-row">
+      <div>
+        <span>Well Similarity</span>
+        <b id="uiSimilarity">91.6%</b>
+      </div>
+      <div class="risk-track">
+        <div class="risk-fill similarity-fill" style="width:91.6%"></div>
+      </div>
+    </div>
+
+    <div class="risk-row">
+      <div>
+        <span>Well Health</span>
+        <b>82%</b>
+      </div>
+      <div class="risk-track">
+        <div class="risk-fill health-fill" style="width:82%"></div>
+      </div>
+    </div>
+
+    <div class="risk-row">
+      <div>
+        <span>Historical Risk</span>
+        <b id="uiHistoricalRisk">64%</b>
+      </div>
+      <div class="risk-track">
+        <div class="risk-fill historical-fill" style="width:64%"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="risk-warning">
+    <span>⚠</span>
+    <div>
+      <b>Key concern</b>
+      <p>Previous wells show stuck-pipe and lost-circulation events.</p>
+    </div>
+  </div>
+</div>
+</section>
+<section class="panel" style="margin-top:15px"><h3>Similarity Intelligence</h3><div class="well-list" id="wellList"></div></section>
+</div>
+<section class="panel" id="about" style="margin-top:15px"><h3>Prototype Architecture Note</h3><p class="note" style="font-size:12px;line-height:1.7">This prototype uses representative sample well records. Similarity is transparent and rule-based across depth, formation, pressure and mud weight. A real deployment would connect validated drilling databases, geological models, enterprise authentication, secure data pipelines and domain-validated engineering models.</p><div class="footer-note">Safety boundary: outputs are for demonstration and engineering review only.</div></section>
+</main></div>
+<script>
+let wells=[],map,markers=[],chart;
+const $=id=>document.getElementById(id);
+async function load(){wells=await (await fetch('/api/wells')).json();$('total').textContent=wells.length;$('high').textContent=wells.filter(w=>w.risk_score>=70).length;$('depth').textContent=Math.round(wells.reduce((a,b)=>a+b.depth,0)/wells.length)+' m';let c={};wells.forEach(w=>w.problems.split(';').forEach(p=>c[p]=(c[p]||0)+1));$('common').textContent=Object.entries(c).sort((a,b)=>b[1]-a[1])[0][0]}
+function riskClass(n){return n>=70?'h':n>=40?'m':'l'}
+function showDetail(w,sim){$('detail').innerHTML=`<h3>Selected Well</h3><div class="big">${w.well_name}</div><div class="note">${w.field} • ${w.well_id}</div><div class="detail-grid"><div class="d"><span>Depth</span><b>${w.depth} m</b></div><div class="d"><span>Formation</span><b>${w.formation}</b></div><div class="d"><span>Pressure</span><b>${w.formation_pressure}</b></div><div class="d"><span>Mud weight</span><b>${w.mud_weight}</b></div><div class="d"><span>Drilling time</span><b>${w.drilling_days} days</b></div><div class="d"><span>Risk score</span><b>${w.risk_score}</b></div></div><div class="rec" style="margin-top:12px"><b>Historical issues:</b> ${w.problems}</div>${sim!==undefined?`<div class="note">Similarity to proposed well: <b style="color:var(--cyan)">${sim}%</b></div>`:''}`}
+function renderMap(nearby,p){if(map){map.remove()}map=L.map('map').setView([+p.latitude,+p.longitude],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap contributors'}).addTo(map);let proposed=L.circleMarker([+p.latitude,+p.longitude],{radius:10,color:'#fff',weight:3,fillColor:'#e85d4a',fillOpacity:1}).addTo(map).bindPopup('<b>Proposed Well</b><br>Target depth: '+p.depth+' m');proposed.openPopup();markers=[];nearby.forEach(w=>{let m=L.circleMarker([w.latitude,w.longitude],{radius:8,color:'#fff',weight:2,fillColor:w.risk_score>=70?'#f2b84b':'#38d6bd',fillOpacity:.95}).addTo(map);m.bindPopup(`<b>${w.well_name}</b><br>${w.field}<br>Depth: ${w.depth} m<br>Risk: ${w.risk_score}<br>Similarity: ${w.similarity}%`);m.on('click',()=>showDetail(w,w.similarity));markers.push(m)});let group=L.featureGroup([proposed,...markers]);map.fitBounds(group.getBounds().pad(.18))}
+function renderSignature(best){$('bestName').textContent=best.well_name;$('bestMeta').textContent=`${best.field} • ${best.distance_km} km away • ${best.formation}`;$('bestScore').textContent=best.similarity+'%';let labels=[['Depth',best.breakdown.depth],['Formation',best.breakdown.formation],['Pressure',best.breakdown.pressure],['Mud weight',best.breakdown.mud_weight]];$('bars').innerHTML=labels.map(([l,v])=>`<div class="barrow"><span>${l}</span><div class="track"><div class="fill" style="width:${v}%"></div></div><b>${v}%</b></div>`).join('');$('whyText').innerHTML=`<b>Why this well?</b> ${best.well_name} is the strongest indexed match using weighted evidence: Depth 40%, Formation 15%, Pressure 25%, and Mud Weight 20%. Historical issues: <b>${best.problems}</b>.`}
+function renderTimeline(events){$('timelineBody').innerHTML=events.map(e=>`<div class="event ${e.type}"><b>${e.depth} m — ${e.label}</b><span>${e.type==='risk'?'Historical risk event':'Indexed event marker'}</span></div>`).join('')}
+function renderSignals(d){let issues=Object.entries(d.risk_counts).sort((a,b)=>b[1]-a[1]);let topIssue=issues[0]?issues[0][0]:'No repeated issue';let riskTone=d.overall_risk==='HIGH'?'High attention':d.overall_risk==='MEDIUM'?'Review required':'Lower signal';$('signals').innerHTML=`<div class="s"><b>${riskTone}</b><span>Overall risk band</span></div><div class="s"><b>${topIssue}</b><span>Dominant historical signal</span></div><div class="s"><b>${d.best_match.similarity}%</b><span>Best-match similarity</span></div><div class="s"><b>${d.nearby.length} wells</b><span>Nearby evidence set</span></div>`}
+function renderCompare(top){$('compare').innerHTML=top.slice(0,2).map((w,i)=>`<div class="compare-card"><h4>${i===0?'⭐ ':''}${w.well_name} <span class="pill">${w.similarity}% match</span></h4><div class="compare-line"><span>Depth</span><b>${w.depth} m</b></div><div class="compare-line"><span>Formation</span><b>${w.formation}</b></div><div class="compare-line"><span>Pressure</span><b>${w.formation_pressure}</b></div><div class="compare-line"><span>Mud weight</span><b>${w.mud_weight}</b></div><div class="compare-line"><span>Risk score</span><b>${w.risk_score}</b></div><div class="compare-line"><span>Issues</span><b>${w.problems}</b></div></div>`).join('')}
+async function analyze(){let p={latitude:+$('lat').value,longitude:+$('lon').value,depth:+$('targetDepth').value,formation_pressure:+$('pressure').value,mud_weight:+$('mud').value,formation:$('formation').value};let d=await (await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})).json();$('results').classList.remove('hidden');$('avgRisk').textContent=d.average_risk;let bc=d.overall_risk==='HIGH'?'high':d.overall_risk==='MEDIUM'?'medium':'low';$('riskBadge').innerHTML=`<span class="badge ${bc}">${d.overall_risk} RISK</span>`;$('recommendations').innerHTML=d.recommendations.map(x=>`<div class="rec">${x}</div>`).join('');$('wellList').innerHTML=d.top_matches.map((w,i)=>`<div class="well ${i===0?'sel':''}" onclick='showDetail(${JSON.stringify(w)},${w.similarity})'><div class="well-row"><b>${i+1}. ${w.well_name}</b><span class="risk ${riskClass(w.risk_score)}">RISK ${w.risk_score}</span></div><small>${w.distance_km} km away • ${w.formation} • ${w.similarity}% similarity</small><div class="note">${w.problems}</div></div>`).join('');renderMap(d.nearby,p);showDetail(d.best_match,d.best_match.similarity);renderSignature(d.best_match);renderTimeline(d.best_match_timeline);renderSignals(d);renderCompare(d.top_matches);$('coverageTop').textContent=d.indexed_wells + ' wells';$('evidence').textContent=d.evidence_note+' Indexed evidence: '+d.indexed_wells+' wells; nearby evidence set: '+d.nearby.length+' wells. The coverage value is a prototype indicator, not a statistical confidence score.';if(chart)chart.destroy();chart=new Chart($('riskChart'),{type:'doughnut',data:{labels:Object.keys(d.risk_counts),datasets:[{data:Object.values(d.risk_counts),backgroundColor:['#38d6bd','#ff6b6b','#f2b84b','#b49cff']}]},options:{plugins:{legend:{labels:{color:'#cbd9e8',font:{size:10}}}}}});$('results').scrollIntoView({behavior:'smooth',block:'start'})}
+load();
+// ===== WORKSPACE SCROLL SPY =====
+document.addEventListener("DOMContentLoaded", () => {
+ const navLinks = [...document.querySelectorAll('a[href^="#"]:not([href="#"])')];
+ navLinks.forEach(link => {
+  link.addEventListener('click', event => {
+    const id = link.getAttribute('href');
+
+    if (!id || id === '#') return;
+
+    const section = document.querySelector(id);
+
+    if (section) {
+      event.preventDefault();
+
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+
+      history.replaceState(null, '', window.location.pathname);
+    }
+  });
+});
+  const targets = navLinks
+    .map(link => {
+      const id = link.getAttribute("href");
+      const section = document.querySelector(id);
+      return section ? { link, section } : null;
+    })
+    .filter(Boolean);
+
+function activate(link) {
+  navLinks.forEach(a => {
+    a.classList.remove("active");
+  });
+
+  if (link) {
+    link.classList.add("active");
+  }
+}
+
+  const observer = new IntersectionObserver(
+    entries => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort(
+          (a, b) =>
+            b.intersectionRatio - a.intersectionRatio
+        );
+
+      if (visible.length > 0) {
+        const current = targets.find(
+          item => item.section === visible[0].target
+        );
+
+        if (current) {
+          activate(current.link);
+        }
+      }
+    },
+    {
+      rootMargin: "-20% 0px -60% 0px",
+      threshold: [0.1, 0.25, 0.5]
+    }
+  );
+
+  targets.forEach(item => observer.observe(item.section));
+});
+// ===== DYNAMIC RISK INTELLIGENCE =====
+const detailBox = document.getElementById("detail");
+
+if (detailBox) {
+    const riskObserver = new MutationObserver(() => {
+
+        const text = detailBox.innerText || "";
+
+const riskMatch = text.match(/RISK(?:\s+SCORE)?\s*:?\s*(\d+)/i);
+        const similarityMatch = text.match(/Similarity to proposed well:\s*([\d.]+)%/i);
+
+        if (riskMatch) {
+            const risk = Number(riskMatch[1]);
+
+            const riskScore = document.getElementById("uiRiskScore");
+            if (riskScore) {
+                riskScore.textContent = risk;
+            }
+            const historicalRisk = document.getElementById("uiHistoricalRisk");
+if (historicalRisk) {
+    historicalRisk.textContent = risk + "%";
+}
+            const historicalFill = document.querySelector(".historical-fill");
+            if (historicalFill) {
+                historicalFill.style.width = risk + "%";
+            }
+
+            const riskLevel = document.querySelector(".risk-level");
+
+            if (riskLevel) {
+                if (risk >= 70) {
+                    riskLevel.textContent = "HIGH RISK";
+                } else if (risk >= 40) {
+                    riskLevel.textContent = "MEDIUM RISK";
+                } else {
+                    riskLevel.textContent = "LOW RISK";
+                }
+            }
+        }
+
+        if (similarityMatch) {
+            const similarity = Number(similarityMatch[1]);
+
+            const similarityText = document.getElementById("uiSimilarity");
+            if (similarityText) {
+                similarityText.textContent = similarity + "%";
+            }
+
+            const similarityFill = document.querySelector(".similarity-fill");
+            if (similarityFill) {
+                similarityFill.style.width = similarity + "%";
+            }
+        }
+    });
+
+    riskObserver.observe(detailBox, {
+        childList: true,
+        subtree: true
+    });
+}
+// ===== AUTO WORKSPACE ACTIVE NAVIGATION =====
+const workspaceLinks = [...document.querySelectorAll('.nav a[href^="#"]')]
+  .filter(link => link.getAttribute('href') !== '#');
+
+const workspaceTargets = workspaceLinks
+  .map(link => {
+    const target = document.querySelector(link.getAttribute('href'));
+    return target ? { link, target } : null;
+  })
+  .filter(item => item !== null);
+
+function setWorkspaceActive(activeLink) {
+  workspaceLinks.forEach(link => {
+    link.classList.remove('active');
+  });
+
+  if (activeLink) {
+    activeLink.classList.add('active');
+  }
+}
+
+const workspaceObserver = new IntersectionObserver(
+  entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+    if (visible.length > 0) {
+      const current = workspaceTargets.find(
+        item => item.target === visible[0].target
+      );
+
+      if (current) {
+        setWorkspaceActive(current.link);
+      }
+    }
+  },
+  {
+    rootMargin: '-20% 0px -60% 0px',
+    threshold: [0.1, 0.25, 0.5]
+  }
+);
+
+workspaceTargets.forEach(item => {
+  workspaceObserver.observe(item.target);
+});
+// ===== SCENARIO LAB CARD CLICK =====
+document.addEventListener("click", function (event) {
+
+    const card = event.target.closest(".compare-card");
+
+    if (!card) return;
+
+    const title = card.querySelector("h4");
+
+    if (!title) return;
+
+    const wellName = title.textContent
+        .replace("★", "")
+        .trim();
+
+    const selectedWell = wells.find(
+        w => w.well_name === wellName
+    );
+
+    if (!selectedWell) return;
+
+    const pill = card.querySelector(".pill");
+
+    let similarity = selectedWell.similarity || 0;
+
+    if (pill) {
+        const match = pill.textContent.match(/([0-9.]+)%/);
+
+        if (match) {
+            similarity = Number(match[1]);
+        }
+    }
+
+    showDetail(selectedWell, similarity);
+
+    document.getElementById("detail")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+});
+</script></body></html>
